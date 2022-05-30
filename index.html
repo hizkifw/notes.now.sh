@@ -39,6 +39,17 @@
         }
 
         setInterval(reloadDoc, 1000);
+
+        // Register a service worker for offline usage
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker
+            .register('./sw.js')
+            .then((res) => {
+              doc.placeholder +=
+                '\n\nService worker installed, this page now works offline.';
+            })
+            .catch((e) => console.error(e));
+        }
       }
     </script>
     <style>
