@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <title>Notes</title>
+    <meta charset="UTF-8" />
     <meta name="author" content="Hizkia Felix - hizkifw.me" />
     <meta
       name="description"
@@ -9,13 +10,35 @@
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
+      var lskeyDoc = 'doc';
+      var lskeyTime = 'doc-lastsave';
+
       function init() {
-        var doc = document.getElementById("doc");
-        var initialText = localStorage.getItem("doc");
+        if (!('localStorage' in window)) {
+          alert(
+            'Your browser does not support localStorage. Notes will not be saved.'
+          );
+        }
+
+        var doc = document.getElementById('doc');
+        var initialText = localStorage.getItem(lskeyDoc);
+        var lastSave = Number(localStorage.getItem(lskeyTime)) || Date.now();
         doc.value = initialText;
-        doc.addEventListener("keyup", function (el) {
-          localStorage.setItem("doc", el.target.value);
+
+        doc.addEventListener('keyup', function (el) {
+          lastSave = Date.now();
+          localStorage.setItem(lskeyDoc, el.target.value);
+          localStorage.setItem(lskeyTime, lastSave);
         });
+
+        function reloadDoc() {
+          var lsTime = Number(localStorage.getItem(lskeyTime));
+          if (lsTime > lastSave) {
+            doc.value = localStorage.getItem(lskeyDoc);
+          }
+        }
+
+        setInterval(reloadDoc, 1000);
       }
     </script>
     <style>
@@ -42,6 +65,8 @@
         color: #fff;
         word-wrap: break-word;
         resize: none;
+        font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console,
+          monospace;
       }
       textarea:focus {
         outline: none;
@@ -55,7 +80,7 @@
       id="doc"
       placeholder="Start typing.
 
-Everything is automatically saved in your browser."
+Everything is automatically saved in your browser, and synced across tabs."
     ></textarea>
   </body>
 </html>
